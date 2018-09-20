@@ -1,24 +1,30 @@
+import java.awt.Color
 import java.awt.image.BufferedImage
-import java.awt.image.WritableRaster
-import java.awt.Image
+import java.io.File
+import javax.imageio.ImageIO
+
+//import java.awt.Image
 
 fun main(args: Array<String>) {
-    println("Hello, world!")
-    var image = BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB)
+    renderMaze("res/xl_maze.txt")
+}
 
-    val wallColor: IntArray = intArrayOf(50, 50, 50)
-
-//    lint message here, will return when more familiar with kotlin
-    var rast = image.getRaster()
-
-    for (i in 0 until image.width - 1) {
-        for (j in 0 until image.height - 1) {
-            print("x")
-//            will fill an image with color based on the chars read from the maze file
-//            can upsample/enlarge if we need larger output (almost certain)
+fun renderMaze(fileName: String) {
+    var i = 0; var j = 0
+    var image = BufferedImage(101, 101, BufferedImage.TYPE_INT_RGB)
+    File(fileName).forEachLine {
+        for (c in it) {
+            if (c == '%') {
+                image.setRGB(i, j, Color(50, 50, 50).rgb)
+            }
+            TODO(CASES FOR START AND END POSITION)
+            j++
         }
-        println()
+        j = 0
+        i++
     }
+    var out : File = File("output.png")
+    ImageIO. write(image,  "png", out)
 }
 
 
