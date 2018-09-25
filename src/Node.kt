@@ -1,7 +1,10 @@
 import kotlin.math.absoluteValue
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class Node(val x: Int = 0, val y: Int = 0, val type: Char = '%') {
     var manhattanToGoal = Int.MAX_VALUE
+    var euclideanToGoal = Float.MAX_VALUE
     lateinit var north: Node
     lateinit var east: Node
     lateinit var south: Node
@@ -20,10 +23,14 @@ class Node(val x: Int = 0, val y: Int = 0, val type: Char = '%') {
     }
 
     fun calcDistance(goalX: Int, goalY: Int) {
+        val diffX: Float = (this.x - goalX).toFloat()
+        val diffY: Float = (this.y - goalY).toFloat()
+
 //        2-D Manhattan distance
-        val diffX = (this.x - goalX).absoluteValue
-        val diffY = (this.y - goalY).absoluteValue
-        this.manhattanToGoal = diffX + diffY
+        this.manhattanToGoal = (diffX.absoluteValue + diffY.absoluteValue).toInt()
+
+//        2-D Euclidean distance
+        this.euclideanToGoal = sqrt(diffX.pow(2) + diffY.pow(2))
     }
 
     fun assignNeighbors(northNode: Node, eastNode: Node, southNode: Node, westNode: Node) {

@@ -8,16 +8,16 @@ fun main(args: Array<String>) {
 //    mazeInstance is a pair with first as the dense tree of nodes
 //    and second as the i,j coords of the starting node
 //    this pair of pairs should probably be a class...
-    var mazeInstance = importMaze("res/xl_maze.txt")
+    var mazeInstance = importMaze("res/titan_maze.txt")
     renderMaze(mazeInstance.first)
 
 //    for testing manhattanDistance
     for (line in mazeInstance.first) {
         for (c in line) {
             if (c.type == 'P' || c.type == '*') {
-                print("\t${c.type}")
+                print("\t${c.type}${c.type}${c.type}${c.type}")
             } else {
-                print("\t${c.manhattanToGoal}")
+                print("\t%.2f".format(c.euclideanToGoal))
             }
         }
         println()
