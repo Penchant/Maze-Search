@@ -8,9 +8,11 @@ fun main(args: Array<String>) {
 //    mazeInstance is a pair with first as the dense tree of nodes
 //    and second as the i,j coords of the starting node
 //    this pair of pairs should probably be a class...
-    var mazeInstance = importMaze("res/titan_maze.txt")
+    var mazeInstance = importMaze("res/medium_maze.txt")
     renderMaze(mazeInstance.first)
-
+    var searchAlgo : SearchAlgorithm = GreedyBestFirstSearch()
+    searchAlgo.Search(mazeInstance.first[mazeInstance.second.first][mazeInstance.second.second])
+    renderMaze(mazeInstance.first)
 //    for testing manhattanDistance
     for (line in mazeInstance.first) {
         for (c in line) {
@@ -89,6 +91,7 @@ fun renderMaze(input: List<List<Node>>) {
     val pathColor = Color(100, 100, 100).rgb
     val pacColor = Color(255, 255, 0).rgb
     val foodColor = Color(175, 238, 238).rgb
+    val traversalColor = Color(17, 23, 238).rgb
 
 //    assuming rectangular with top row widest
     var image = BufferedImage(input[1].size, input.size, BufferedImage.TYPE_INT_RGB)
@@ -96,7 +99,15 @@ fun renderMaze(input: List<List<Node>>) {
         for (j in 0 until input[i].size) {
             when (input[i][j].type) {
                 '%' -> image.setRGB(j, i, wallColor)
-                ' ' -> image.setRGB(j, i, pathColor)
+                ' ' -> {
+                    if(input[i][j].visited)
+                    {
+                        image.setRGB(j, i, traversalColor)
+                    }
+                    else {
+                        image.setRGB(j, i, pathColor)
+                    }
+                }
                 'P' -> image.setRGB(j, i, pacColor)
                 '*' -> image.setRGB(j, i, foodColor)
             }

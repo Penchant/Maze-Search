@@ -5,10 +5,14 @@ import kotlin.math.sqrt
 class Node(val x: Int = 0, val y: Int = 0, val type: Char = '%') {
     var manhattanToGoal = Int.MAX_VALUE
     var euclideanToGoal = Float.MAX_VALUE
+    var visited = false
     lateinit var north: Node
     lateinit var east: Node
     lateinit var south: Node
     lateinit var west: Node
+
+    val neighbors get() = mutableListOf(north, east, south, west)
+    var deadend = false
 
     fun coordsString(): String {
         return "(${this.x}, ${this.y})"
@@ -38,5 +42,6 @@ class Node(val x: Int = 0, val y: Int = 0, val type: Char = '%') {
         this.east = eastNode
         this.south = southNode
         this.west = westNode
+        this.deadend = neighbors.count { neighbor -> neighbor.type != '%'  } <= 1
     }
 }
