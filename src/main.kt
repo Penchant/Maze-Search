@@ -9,22 +9,11 @@ fun main(args: Array<String>) {
 //    and second as the i,j coords of the starting node
 //    this pair of pairs should probably be a class...
     var mazeInstance = importMaze("res/medium_maze.txt")
+    var searchAlgo: SearchAlgorithm = AStarSearch()
+    searchAlgo.search(mazeInstance.first[mazeInstance.second.first][mazeInstance.second.second])
     renderMaze(mazeInstance.first)
-    var searchAlgo : SearchAlgorithm = GreedyBestFirstSearch()
-    searchAlgo.Search(mazeInstance.first[mazeInstance.second.first][mazeInstance.second.second])
-    renderMaze(mazeInstance.first)
-//    for testing manhattanDistance
-    for (line in mazeInstance.first) {
-        for (c in line) {
-            if (c.type == 'P' || c.type == '*') {
-                print("\t${c.type}${c.type}${c.type}${c.type}")
-            } else {
-                print("\t%.2f".format(c.euclideanToGoal))
-            }
-        }
-        println()
-    }
-    println("Import, render, and print finished (${System.currentTimeMillis() - startTime}ms)")
+
+    println("solve and render finished (${System.currentTimeMillis() - startTime}ms)")
     println("Starting coords: ${mazeInstance.first[mazeInstance.second.first][mazeInstance.second.second].coordsString()}")
 }
 
@@ -50,6 +39,7 @@ fun importMaze(fileName: String): Pair<List<List<Node>>, Pair<Int, Int>> {
 //                goal position
                 goalI = i
                 goalJ = j
+//                println("goal at ($i, $j)")
             }
         }
     }
@@ -73,7 +63,7 @@ fun importMaze(fileName: String): Pair<List<List<Node>>, Pair<Int, Int>> {
                         maze[i][j - 1] // west
                 )
             }
-            maze[i][j].calcDistance(goalI, goalJ)
+            maze[i][j].calcDistance(goalI, goalJ, startI, startJ)
         }
     }
 
@@ -88,10 +78,11 @@ fun importMaze(fileName: String): Pair<List<List<Node>>, Pair<Int, Int>> {
 
 fun renderMaze(input: List<List<Node>>) {
     val wallColor = Color(50, 50, 50).rgb
-    val pathColor = Color(100, 100, 100).rgb
+    val floorColor = Color(100, 100, 100).rgb
     val pacColor = Color(255, 255, 0).rgb
     val foodColor = Color(175, 238, 238).rgb
-    val traversalColor = Color(17, 23, 238).rgb
+    val pathColor = Color(17, 23, 238).rgb
+    val exploredColor = Color(80, 80, 80).rgb
 
 //    assuming rectangular with top row widest
     var image = BufferedImage(input[1].size, input.size, BufferedImage.TYPE_INT_RGB)
@@ -99,20 +90,20 @@ fun renderMaze(input: List<List<Node>>) {
         for (j in 0 until input[i].size) {
             when (input[i][j].type) {
                 '%' -> image.setRGB(j, i, wallColor)
-                ' ' -> {
-                    if(input[i][j].visited)
-                    {
-                        image.setRGB(j, i, traversalColor)
-                    }
-                    else {
-                        image.setRGB(j, i, pathColor)
-                    }
-                }
                 'P' -> image.setRGB(j, i, pacColor)
                 '*' -> image.setRGB(j, i, foodColor)
+                ' ' -> {
+                    if (input[i][j].visited) {
+                        image.setRGB(j, i, pathColor)
+                    } else if (input[i][j].exploredNotUsed) {
+                        image.setRGB(j, i, exploredColor)
+                    } else {
+                        image.setRGB(j, i, floorColor)
+                    }
+                }
             }
         }
+        var out = File("res/maze_images/output/output.png")
+        ImageIO.write(image, "png", out)
     }
-    var out = File("res/maze_images/output.png")
-    ImageIO.write(image, "png", out)
 }

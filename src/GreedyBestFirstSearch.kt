@@ -3,7 +3,7 @@ class GreedyBestFirstSearch : SearchAlgorithm {
     var frontier : MutableList<Node> = mutableListOf()
     var nodesTraversed : MutableList<Node> = mutableListOf()
 
-    override fun Search(startingNode: Node): List<Node> {
+    override fun search(startingNode: Node): List<Node> {
         addNode(startingNode)
         var pastNode = startingNode
         var currentNode = startingNode
@@ -18,7 +18,7 @@ class GreedyBestFirstSearch : SearchAlgorithm {
             pastNode = currentNode
 
             var sortedNeighbors = currentNode.neighbors.sortedWith(Comparator.comparing<Node, Int> { neighbor -> neighbor.manhattanToGoal })
-            sortedNeighbors = sortedNeighbors.filter { neighbor -> neighbor.type != '%' && !(neighbor.visited && neighbor.deadend)}
+            sortedNeighbors = sortedNeighbors.filter { neighbor -> neighbor.type != '%' && !(neighbor.visited && neighbor.deadEnd)}
             currentNode = if(sortedNeighbors.count() > 1)
             {
                 sortedNeighbors.first{neighbor -> neighbor != pastNode}
@@ -27,8 +27,8 @@ class GreedyBestFirstSearch : SearchAlgorithm {
             }
             if(!currentNode.visited)
                 nodesTraversed.add(currentNode)
-            if(pastNode.deadend && currentNode.neighbors.filter { neighbor -> neighbor.type != '%' }.count() == 1)
-                currentNode.deadend = true
+            if(pastNode.deadEnd && currentNode.neighbors.filter { neighbor -> neighbor.type != '%' }.count() == 1)
+                currentNode.deadEnd = true
             currentNode.visited = true
             if(currentNode.type == '*')
             {

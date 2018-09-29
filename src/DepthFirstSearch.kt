@@ -3,7 +3,7 @@ class DepthFirstSearch : SearchAlgorithm {
     var frontier : MutableList<Node> = mutableListOf()
     var nodesTraversed : MutableList<Node> = mutableListOf()
 
-    override fun Search(startingNode: Node): List<Node> {
+    override fun search(startingNode: Node): List<Node> {
         addNode(startingNode)
 
         while(!frontier.isEmpty())
