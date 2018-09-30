@@ -1,48 +1,51 @@
 class GreedyBestFirstSearch : SearchAlgorithm {
 
-    var frontier : MutableList<Node> = mutableListOf()
-    var nodesTraversed : MutableList<Node> = mutableListOf()
+    override fun search(startingNode: Node): MutableList<Pair<Node, List<Node>>> {
 
-    override fun search(startingNode: Node): List<Node> {
-        addNode(startingNode)
-        var pastNode = startingNode
-        var currentNode = startingNode
-        var count = 0
-        while(!frontier.isEmpty())
-        {
-            count++
-            if(count > 1000){
+        var current = startingNode
+        var openNodes: MutableList<Node> = mutableListOf()
+        var cameFrom: HashMap<Node, Node> = hashMapOf()
+        var path: MutableList<Node> = mutableListOf()
+
+        openNodes.add(current)
+        while (openNodes.isNotEmpty()) {
+            current = openNodes.first()
+            if (openNodes.size % 1000 == 0) println("opened ${openNodes.size} nodes")
+
+            if (current.type == '*') {
+                println("you won")
+                while (cameFrom[current] != startingNode) {
+//                    this might be drawing the wrong path?
+//                    cameFrom is assigned in order discovered?
+                    cameFrom.getOrDefault(current, Node()).onPath = true
+                    current = cameFrom.getOrDefault(current, Node())
+                    path.add(current)
+                    if (current == Node()) {
+                        println("the path is broken")
+                        break
+                    }
+                }
                 break
             }
 
-            pastNode = currentNode
-
-            var sortedNeighbors = currentNode.neighbors.sortedWith(Comparator.comparing<Node, Int> { neighbor -> neighbor.manhattanToGoal })
-            sortedNeighbors = sortedNeighbors.filter { neighbor -> neighbor.type != '%' && !(neighbor.visited && neighbor.deadEnd)}
-            currentNode = if(sortedNeighbors.count() > 1)
-            {
-                sortedNeighbors.first{neighbor -> neighbor != pastNode}
-            } else {
-                sortedNeighbors[0]
+            var neighbors = current.neighbors
+            neighbors.sortBy { node -> node.manhattanToGoal }
+            neighbors.removeAll { node -> node.type == '%' || node in openNodes }
+            if (neighbors.isEmpty()) {
+                openNodes.remove(current)
+                continue
             }
-            if(!currentNode.visited)
-                nodesTraversed.add(currentNode)
-            if(pastNode.deadEnd && currentNode.neighbors.filter { neighbor -> neighbor.type != '%' }.count() == 1)
-                currentNode.deadEnd = true
-            currentNode.visited = true
-            if(currentNode.type == '*')
-            {
-                break
-            }
-        }
-        return nodesTraversed
-    }
 
-    fun addNode(node : Node)
-    {
-        if(node.type != '%' && !node.visited )
-        {
-            frontier.add(node)
+            for (node in neighbors) {
+                node.explored = true
+                if (node !in cameFrom.keys) cameFrom[node] = current
+                openNodes.add(node)
+            }
+//            adds neighbors sorted by distance to openNodes
         }
+        println("path length: ${path.size}")
+        var out: MutableList<Pair<Node, List<Node>>> = mutableListOf()
+        path.forEach { node: Node -> out.add(Pair(node, listOf())) }
+        return out
     }
 }

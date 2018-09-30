@@ -1,29 +1,29 @@
 class DepthFirstSearch : SearchAlgorithm {
 
-    var frontier : MutableList<Node> = mutableListOf()
-    var nodesTraversed : MutableList<Node> = mutableListOf()
+    var frontier: MutableList<Node> = mutableListOf()
+    var nodesTraversed: MutableList<Node> = mutableListOf()
 
-    override fun search(startingNode: Node): List<Node> {
+    override fun search(startingNode: Node): MutableList<Pair<Node, List<Node>>> {
         addNode(startingNode)
 
-        while(!frontier.isEmpty())
-        {
+        while (!frontier.isEmpty()) {
             var currentNode = frontier.removeAt(frontier.lastIndex)
 
             nodesTraversed.add(currentNode)
-            if(currentNode.type == '*') {
+            if (currentNode.type == '*') {
                 break
             }
-            currentNode.visited = true
+            currentNode.onPath = true
             currentNode.neighbors.forEach { neighbor -> addNode(neighbor) }
         }
-        return nodesTraversed
+
+        var out: MutableList<Pair<Node, List<Node>>> = mutableListOf()
+        nodesTraversed.forEach { node: Node -> out.add(Pair(node, listOf())) }
+        return out
     }
 
-    fun addNode(node : Node)
-    {
-        if(node.type != '%' && !node.visited )
-        {
+    fun addNode(node: Node) {
+        if (node.type != '%' && !node.onPath) {
             frontier.add(node)
         }
     }

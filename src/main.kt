@@ -8,10 +8,17 @@ fun main(args: Array<String>) {
 //    mazeInstance is a pair with first as the dense tree of nodes
 //    and second as the i,j coords of the starting node
 //    this pair of pairs should probably be a class...
-    var mazeInstance = importMaze("res/medium_maze.txt")
+    var mazeInstance = importMaze("res/open_maze.txt")
+
+//    var searchAlgo: SearchAlgorithm = GreedyBestFirstSearch()
     var searchAlgo: SearchAlgorithm = AStarSearch()
-    searchAlgo.search(mazeInstance.first[mazeInstance.second.first][mazeInstance.second.second])
-    renderMaze(mazeInstance.first)
+
+    val path = searchAlgo.search(mazeInstance.first[mazeInstance.second.first][mazeInstance.second.second])
+//    assuming rectangular with top row widest again
+    println("%.2f percent of nodes used by final  path".format(path.size.toDouble() / (mazeInstance.first.size.toDouble() * mazeInstance.first[0].size.toDouble())))
+
+//    renderMaze(mazeInstance.first)
+    animatePath(mazeInstance.first, path, "res/test/test")
 
     println("solve and render finished (${System.currentTimeMillis() - startTime}ms)")
     println("Starting coords: ${mazeInstance.first[mazeInstance.second.first][mazeInstance.second.second].coordsString()}")
@@ -76,26 +83,27 @@ fun importMaze(fileName: String): Pair<List<List<Node>>, Pair<Int, Int>> {
     return Pair(rows.toList(), Pair(startI, startJ))
 }
 
-fun renderMaze(input: List<List<Node>>) {
-    val wallColor = Color(50, 50, 50).rgb
-    val floorColor = Color(100, 100, 100).rgb
-    val pacColor = Color(255, 255, 0).rgb
-    val foodColor = Color(175, 238, 238).rgb
-    val pathColor = Color(17, 23, 238).rgb
-    val exploredColor = Color(80, 80, 80).rgb
-
+fun renderMaze(map: List<List<Node>>,
+               outputFilename: String = "res/maze_images/output/defaultOutput.png",
+               wallColor: Int = Color(50, 50, 50).rgb,
+               floorColor: Int = Color(125, 125, 125).rgb,
+               pacColor: Int = Color(255, 255, 0).rgb,
+               foodColor: Int = Color(175, 238, 238).rgb,
+               pathColor: Int = Color(30, 30, 150).rgb,
+               exploredColor: Int = Color(80, 80, 80).rgb) {
 //    assuming rectangular with top row widest
-    var image = BufferedImage(input[1].size, input.size, BufferedImage.TYPE_INT_RGB)
-    for (i in 0 until input.size) {
-        for (j in 0 until input[i].size) {
-            when (input[i][j].type) {
+    var image = BufferedImage(map[1].size, map.size, BufferedImage.TYPE_INT_RGB)
+    for (i in 0 until map.size) {
+        for (j in 0 until map[i].size) {
+            var temp = map[i][j]
+            when (temp.type) {
                 '%' -> image.setRGB(j, i, wallColor)
                 'P' -> image.setRGB(j, i, pacColor)
                 '*' -> image.setRGB(j, i, foodColor)
                 ' ' -> {
-                    if (input[i][j].visited) {
+                    if (temp.onPath) {
                         image.setRGB(j, i, pathColor)
-                    } else if (input[i][j].exploredNotUsed) {
+                    } else if (temp.explored) {
                         image.setRGB(j, i, exploredColor)
                     } else {
                         image.setRGB(j, i, floorColor)
@@ -103,7 +111,18 @@ fun renderMaze(input: List<List<Node>>) {
                 }
             }
         }
-        var out = File("res/maze_images/output/output.png")
+        var out = File(outputFilename)
         ImageIO.write(image, "png", out)
+    }
+}
+
+fun animatePath(map: List<List<Node>>, pathNodes: MutableList<Pair<Node, List<Node>>>, outputFilename: String = "res/maze_images/output/defaultOutput.png") {
+//    pathNodes key is a node on the path with value as a list of explored nodes at that step
+    for (step in pathNodes) {
+        step.first.onPath = true
+        step.second.forEach { node: Node -> node.explored = true }
+        renderMaze(map, "$outputFilename-${pathNodes.indexOf(step)}.png")
+        step.second.forEach { node: Node -> node.explored = false }
+
     }
 }
