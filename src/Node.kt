@@ -7,8 +7,12 @@ class Node(val x: Int = 0, val y: Int = 0, val type: Char = '%') {
     var euclideanToGoal = Float.MAX_VALUE
     var manhattanToStart = Int.MAX_VALUE
     var euclideanToStart = Float.MAX_VALUE
+
+    //    these could be condensed into just two variables probably
     var visited = false
     var exploredNotUsed = false
+    var onPath = false
+
     lateinit var north: Node
     lateinit var east: Node
     lateinit var south: Node

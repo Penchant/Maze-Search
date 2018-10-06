@@ -9,8 +9,11 @@ fun main(args: Array<String>) {
 //    and second as the i,j coords of the starting node
 //    this pair of pairs should probably be a class...
     var mazeInstance = importMaze("res/medium_maze.txt")
-    var searchAlgo: SearchAlgorithm = AStarSearch()
-    searchAlgo.search(mazeInstance.first[mazeInstance.second.first][mazeInstance.second.second])
+
+//    var searchAlg: SearchAlgorithm = AStarSearch()
+    var searchAlg: SearchAlgorithm = GreedyBestFirstSearch()
+
+    searchAlg.search(mazeInstance.first[mazeInstance.second.first][mazeInstance.second.second])
     renderMaze(mazeInstance.first)
 
     println("solve and render finished (${System.currentTimeMillis() - startTime}ms)")
@@ -88,17 +91,20 @@ fun renderMaze(input: List<List<Node>>) {
     var image = BufferedImage(input[1].size, input.size, BufferedImage.TYPE_INT_RGB)
     for (i in 0 until input.size) {
         for (j in 0 until input[i].size) {
-            when (input[i][j].type) {
+            val current = input[i][j]
+            when (current.type) {
                 '%' -> image.setRGB(j, i, wallColor)
                 'P' -> image.setRGB(j, i, pacColor)
                 '*' -> image.setRGB(j, i, foodColor)
                 ' ' -> {
-                    if (input[i][j].visited) {
+                    if (current.onPath) {
                         image.setRGB(j, i, pathColor)
-                    } else if (input[i][j].exploredNotUsed) {
-                        image.setRGB(j, i, exploredColor)
                     } else {
-                        image.setRGB(j, i, floorColor)
+                        if (current.visited) {
+                            image.setRGB(j, i, exploredColor)
+                        } else {
+                            image.setRGB(j, i, floorColor)
+                        }
                     }
                 }
             }

@@ -18,19 +18,16 @@ class AStarSearch : SearchAlgorithm {
             if (current.type == '*') {
 //                if we have found the goal, mark the nodes on the path as visited
                 var pathLength = 0
-                println("found goal at " + current.coordsString())
 
                 path.add(current)
                 while (path.last().type != 'P') {
 //                    while not reached the start yet
-                    path.last().visited = true
+                    path.last().onPath = true
                     path.add(cameFrom.getOrDefault(path.last(), Node()))
                     pathLength++
                 }
-                for (a in closedNodes) a.exploredNotUsed = true
+                closedNodes.forEach { node: Node -> node.visited = true }
                 println("path of length $pathLength")
-                println("explored ${closedNodes.size} nodes")
-                println("%.2f percent of explored nodes used in solution".format((pathLength.toDouble() / closedNodes.size.toDouble()) * 100))
                 break
             }
             openNodes.removeAt(0)
@@ -49,6 +46,6 @@ class AStarSearch : SearchAlgorithm {
                 gScore[neighbor] = newDistance
             }
         }
-        return path
+        return listOf()
     }
 }
