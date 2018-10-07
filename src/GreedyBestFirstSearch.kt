@@ -1,13 +1,12 @@
 class GreedyBestFirstSearch : SearchAlgorithm {
 
-    override fun search(startingNode: Node): List<Node> {
+    override fun search(startingNode: Node) {
 
         startingNode.visited = true
         var nodeStack: MutableList<MutableList<Node>> = mutableListOf(mutableListOf(startingNode))
         nodeStack.add(getSortedNeighbors(startingNode))
-
+        var count = 0
         while (nodeStack.isNotEmpty()) {
-
 //            if no more neighbors at this level, pop it from the stack
             if (nodeStack.last().isEmpty()) {
                 nodeStack.removeAt(nodeStack.lastIndex)
@@ -32,18 +31,13 @@ class GreedyBestFirstSearch : SearchAlgorithm {
         }
         var pathLength = 0
         nodeStack.forEach { layer: MutableList<Node> -> layer.last().onPath = true; pathLength++ }
-        println(pathLength)
-
-        return listOf()
+        println("Path Length: $pathLength")
     }
 
     private fun getSortedNeighbors(input: Node): MutableList<Node> {
-//        this also prunes walls
-        var output: MutableList<Node> = mutableListOf()
+//        only adds to output if not a wall and not already visited
+        var output = input.neighbors.filter { node -> node.type != '%' && !node.visited}.toMutableList()
 
-//        only adds to output if not a wall
-//                && !node.visited
-        input.neighbors.forEach { node: Node -> if (node.type != '%' && !node.visited) output.add(node) }
         output.sortBy { node -> node.manhattanToGoal }
 //        mark as visited
         output.forEach { node: Node -> node.visited = true }

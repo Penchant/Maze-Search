@@ -1,30 +1,40 @@
+import java.util.*
+
 class DepthFirstSearch : SearchAlgorithm {
 
     var frontier : MutableList<Node> = mutableListOf()
-    var nodesTraversed : MutableList<Node> = mutableListOf()
 
-    override fun search(startingNode: Node): List<Node> {
-        addNode(startingNode)
-
+    override fun search(startingNode: Node) {
+        frontier.add(startingNode)
+        var currentNode = startingNode
         while(!frontier.isEmpty())
         {
-            var currentNode = frontier.removeAt(frontier.lastIndex)
-
-            nodesTraversed.add(currentNode)
             if(currentNode.type == '*') {
                 break
             }
             currentNode.visited = true
-            currentNode.neighbors.forEach { neighbor -> addNode(neighbor) }
+
+            addNodes(currentNode)
+            currentNode = frontier.removeAt(frontier.lastIndex)
         }
-        return nodesTraversed
+        unwindPath(currentNode)
     }
 
-    fun addNode(node : Node)
-    {
-        if(node.type != '%' && !node.visited )
-        {
-            frontier.add(node)
-        }
+    fun addNodes(node : Node) {
+        node.neighbors.filter {neighbor -> neighbor.type != '%' && !neighbor.visited }
+                .forEach { neighbor -> frontier.add(neighbor); neighbor.pastNode = node }
     }
+}
+
+fun unwindPath(goalNode : Node) {
+    println("Starting unwind")
+    var currentNode = goalNode
+    var pathLength = 0
+    while(currentNode.pastNode != currentNode)
+    {
+        currentNode.onPath = true
+        currentNode = currentNode.pastNode
+        pathLength++
+    }
+    println("Path length: $pathLength")
 }

@@ -3,7 +3,7 @@ class AStarSearch : SearchAlgorithm {
     var openNodes: MutableList<Node> = mutableListOf()
     var closedNodes: MutableList<Node> = mutableListOf()
 
-    override fun search(startingNode: Node): List<Node> {
+    override fun search(startingNode: Node) {
 
         var cameFrom: HashMap<Node, Node> = hashMapOf()
         var gScore: HashMap<Node, Int> = hashMapOf()
@@ -46,6 +46,5 @@ class AStarSearch : SearchAlgorithm {
                 gScore[neighbor] = newDistance
             }
         }
-        return listOf()
     }
 }

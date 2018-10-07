@@ -12,6 +12,7 @@ class Node(val x: Int = 0, val y: Int = 0, val type: Char = '%') {
     var visited = false
     var exploredNotUsed = false
     var onPath = false
+    var pastNode = this
 
     lateinit var north: Node
     lateinit var east: Node

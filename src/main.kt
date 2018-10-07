@@ -8,7 +8,7 @@ fun main(args: Array<String>) {
 //    mazeInstance is a pair with first as the dense tree of nodes
 //    and second as the i,j coords of the starting node
 //    this pair of pairs should probably be a class...
-    var mazeInstance = importMaze("res/medium_maze.txt")
+    var mazeInstance = importMaze("res/open_maze.txt")
 
 //    var searchAlg: SearchAlgorithm = AStarSearch()
     var searchAlg: SearchAlgorithm = GreedyBestFirstSearch()
@@ -86,6 +86,8 @@ fun renderMaze(input: List<List<Node>>) {
     val foodColor = Color(175, 238, 238).rgb
     val pathColor = Color(17, 23, 238).rgb
     val exploredColor = Color(80, 80, 80).rgb
+    // Starts at 2 for start and end nodes being expanded
+    var nodesExpanded = 2
 
 //    assuming rectangular with top row widest
     var image = BufferedImage(input[1].size, input.size, BufferedImage.TYPE_INT_RGB)
@@ -99,8 +101,10 @@ fun renderMaze(input: List<List<Node>>) {
                 ' ' -> {
                     if (current.onPath) {
                         image.setRGB(j, i, pathColor)
+                        nodesExpanded++
                     } else {
                         if (current.visited) {
+                            nodesExpanded++
                             image.setRGB(j, i, exploredColor)
                         } else {
                             image.setRGB(j, i, floorColor)
@@ -109,7 +113,8 @@ fun renderMaze(input: List<List<Node>>) {
                 }
             }
         }
-        var out = File("res/maze_images/output/output.png")
-        ImageIO.write(image, "png", out)
     }
+    println("Number of nodes expanded: $nodesExpanded")
+    var out = File("res/maze_images/output/output.png")
+    ImageIO.write(image, "png", out)
 }

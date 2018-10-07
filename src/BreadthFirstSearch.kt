@@ -1,30 +1,33 @@
 class BreadthFirstSearch : SearchAlgorithm {
 
     var frontier : MutableList<Node> = mutableListOf()
-    var nodesTraversed : MutableList<Node> = mutableListOf()
 
-    override fun search(startingNode: Node): List<Node> {
-        addNode(startingNode)
-
+    override fun search(startingNode: Node) {
+        frontier.add(startingNode)
+        var currentNode = startingNode
+        var iterations = 0
         while(!frontier.isEmpty())
         {
-            var currentNode = frontier.removeAt(0)
-
-            nodesTraversed.add(currentNode)
             if(currentNode.type == '*') {
                 break
             }
             currentNode.visited = true
-            currentNode.neighbors.forEach { neighbor -> addNode(neighbor) }
+            addNodes(currentNode)
+            currentNode = frontier.removeAt(0)
+            iterations++
+            if (iterations % 10 == 0){
+                frontier = frontier.distinct().toMutableList()
+            }
         }
-        return nodesTraversed
+        unwindPath(currentNode)
     }
 
-    fun addNode(node : Node)
-    {
-        if(node.type != '%' && !node.visited )
-        {
-            frontier.add(node)
+    fun addNodes(node : Node) {
+        node.neighbors.forEach {neighbor ->
+            if(neighbor.type != '%' && !neighbor.visited)
+            {
+                frontier.add(neighbor); neighbor.pastNode = node
+            }
         }
     }
 }
