@@ -44,6 +44,7 @@ class AStarSearch : SearchAlgorithm {
                 }
                 cameFrom[neighbor] = current
                 gScore[neighbor] = newDistance
+                fScore[neighbor] = gScore.getOrDefault(neighbor, Int.MAX_VALUE) + neighbor.manhattanToGoal
             }
         }
     }

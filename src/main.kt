@@ -8,10 +8,13 @@ fun main(args: Array<String>) {
 //    mazeInstance is a pair with first as the dense tree of nodes
 //    and second as the i,j coords of the starting node
 //    this pair of pairs should probably be a class...
-    var mazeInstance = importMaze("res/open_maze.txt")
+    var mazeInstance = importMaze("res/large_maze.txt")
 
-//    var searchAlg: SearchAlgorithm = AStarSearch()
-    var searchAlg: SearchAlgorithm = GreedyBestFirstSearch()
+//    var searchAlg: SearchAlgorithm = BreadthFirstSearch()
+//    var searchAlg: SearchAlgorithm = DepthFirstSearch()
+
+//    var searchAlg: SearchAlgorithm = GreedyBestFirstSearch()
+    var searchAlg: SearchAlgorithm = AStarSearch()
 
     searchAlg.search(mazeInstance.first[mazeInstance.second.first][mazeInstance.second.second])
     renderMaze(mazeInstance.first)
